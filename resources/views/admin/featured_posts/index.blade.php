@@ -1,0 +1,110 @@
+@extends('layouts.admin.base')
+@section('title', 'Featured Posts | '.env('APP_NAME'))
+@section('content')
+<nav class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.featured-posts.index') }}">Featured Posts</a></li>
+        <li class="breadcrumb-item active" aria-current="page">All Featured Posts</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-header px-0 d-flex justify-content-between align-items-center">
+                    <h6 class="card-title">All Featured Posts</h6>
+                    <a class="btn btn-primary" href="{{ route('admin.featured-posts.create') }}" role="button">Add New</a>
+                </div>
+                <div class="filter mt-3">
+                    <form action="{{ route('admin.featured-posts.index') }}" class="filter-form row g-3">
+                        <div class="col-md-6">
+                            <select class="form-select" name="section">
+                                <option value="All" {{ request()->get('section') == 'All' ? 'selected' : '' }}>
+                                    Select Featured Section
+                                </option>
+                                @if($featuredSections->count() > 0)
+                                @foreach($featuredSections as $featuredSection)
+                                <option value="{{ $featuredSection->id }}" {{ request()->get('section') == $featuredSection->id ? 'selected' : '' }}>
+                                    {{ $featuredSection->title }}
+                                </option>
+                                @endforeach
+                                @endif
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-outline-primary" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="table-responsive pt-3">
+                    <table class="table table-sm table-striped table-hover">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th style="width: 5%;">#</th>
+                                <th style="width: 20%;">Thumbnail</th>
+                                <th style="width: 20%;">Title</th>
+                                <th style="width: 20%;">Section</th>
+                                <th style="width: 15%;">Status</th>
+                                <th style="width: 15%;">Date</th>
+                                <th style="width: 5%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(!empty($featuredPosts) && $featuredPosts->count() > 0)
+                            @foreach($featuredPosts as $key => $featuredPost)
+                            <tr>
+                                <td>{{ $featuredPosts->currentpage() * $featuredPosts->perpage() - $featuredPosts->perpage() + ++$key }}</td>
+                                <td>
+                                    <img src="{{ !empty($featuredPost->thumbnail) ? asset('media/'.$featuredPost->thumbnail) : asset('static/admin/images/default.jpg') }}" alt="Thumbnail">
+                                </td>
+                                <td>
+                                    {{ $featuredPost->title }}
+                                </td>
+                                <td>
+                                    {{ $featuredPost->featuredSection ? $featuredPost->featuredSection->title : '' }}
+                                </td>
+                                <td>
+                                    @if($featuredPost->status == 'deactive')
+                                    <span class="badge rounded-pill bg-warning text-dark">Deactive</span>
+                                    @elseif($featuredPost->status == 'active')
+                                    <span class="badge rounded-pill bg-success">Active</span>
+                                    @endif
+                                </td>
+                                <td>
+                                {{ $featuredPost->created_at->format('Y-m-d h:i A') }}
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-start">
+                                        <div class="edit-btn">
+                                            <a class="btn btn-sm btn-primary" href="{{ route('admin.featured-posts.edit', $featuredPost->id) }}" role="button">Edit</a>
+                                        </div>
+                                        <div class="delete-btn ms-2">
+                                            <form action="{{ route('admin.featured-posts.destroy', $featuredPost->id) }}" method="post">
+                                                @method('delete')
+                                                @csrf
+                                                <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete?');" role="button">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                            @else
+                            <tr class="text-center">
+                                <td colspan="7">No Result Found!</td>
+                            </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination mt-2">
+                    <div class="d-flex justify-content-center">
+                        {{ $featuredPosts->appends(request()->query())->links('layouts.admin.pagination') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
