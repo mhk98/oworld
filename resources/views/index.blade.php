@@ -6,11 +6,11 @@
   @foreach($highlightCategories as $highlightCategory)
     @if($highlightCategory->highlights->isNotEmpty())
     <div class="highlight-category">
-    <div class="highlight-gradient {{ $highlightCategory->allViewed() ? 'not-active' : '' }}">
-      <div class="first-highlight" data-bs-toggle="modal" data-bs-target="#highlightModal{{ $highlightCategory->id }}">
-        <img src="{{ asset('media/'.$highlightCategory->highlights->first()->thumbnail) }}" alt="{{ $highlightCategory->title }}">
+      <div class="highlight-gradient {{ $highlightCategory->allViewed() ? 'not-active' : '' }}">
+        <div class="first-highlight" data-bs-toggle="modal" data-bs-target="#highlightModal{{ $highlightCategory->id }}">
+          <img src="{{ asset('media/'.$highlightCategory->highlights->first()->thumbnail) }}" alt="{{ $highlightCategory->title }}">
+        </div>
       </div>
-    </div>
       <h5>{{ $highlightCategory->title == 'Events and Entertainment' ? 'Events' : $highlightCategory->title }}</h5>
     </div>
     @endif
@@ -192,12 +192,12 @@
                                 @endforeach
                             </div>
                             <div class="carousel-navigation">
-                                <a style="margin-left:27px" href="javascript:void(0);" class="prev" id="story-carousel-prev">
+                                <a style="margin-left:27px" href="javascript:void(0);" class="prev story-carousel-prev">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left">
                                         <polyline points="15 18 9 12 15 6"></polyline>
                                     </svg>
                                 </a>
-                                <a style="margin-right:27px" href="javascript:void(0);" class="next" id="story-carousel-next">
+                                <a style="margin-right:27px" href="javascript:void(0);" class="next story-carousel-next">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
                                         <polyline points="9 18 15 12 9 6"></polyline>
                                     </svg>
@@ -214,76 +214,71 @@
 
 @push('js')
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+    // Open featured post modal if set
     @if(!empty($openFeaturedPost))
     var myModal = new bootstrap.Modal(document.getElementById('featuredPostModal{{ $openFeaturedPost->featured_content_id }}'));
     myModal.show();
     @endif
 
+    // Open featured offer modal if set
     @if(!empty($openFeaturedOffer))
     var myModal = new bootstrap.Modal(document.getElementById('featuredOfferModal{{ $openFeaturedOffer->featured_content_id }}'));
     myModal.show();
     @endif
 
+    // Open highlight category modal if set
     @if(!empty($openHighlightCategory))
     var myModal = new bootstrap.Modal(document.getElementById('highlightModal{{ $openHighlightCategory->id }}'));
     myModal.show();
     @endif
 
-    // Story image click event
-    document.querySelectorAll('.story-slider .item img').forEach(function(img) {
-      img.addEventListener('click', function() {
-        var imgSrc = img.getAttribute('src');
-        document.getElementById('modalStoryImage').setAttribute('src', imgSrc);
-        var storyImageModal = new bootstrap.Modal(document.getElementById('storyImageModal'));
-        storyImageModal.show();
-      });
-    });
-  });
+    // Initialize story sliders for each modal
+    document.querySelectorAll('.story-wrapper').forEach(function(wrapper, index) {
+        var storySlider = $(wrapper).find('.story-slider');
 
-  $(document).ready(function() {
-    var storyitems = $(".story-slider");
-    storyitems.owlCarousel({
-      items: 1,
-      margin: 0,
-      nav: true,
-      loop: true,
-      autoplay: true,
-      autoplayTimeout: 5000,
-      autoplayHoverPause: true,
-      dots: true
-    });
+        storySlider.owlCarousel({
+            items: 1,
+            margin: 0,
+            nav: false,
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 5000,
+            autoplayHoverPause: false,
+            dots: true
+        });
 
-    // Custom navigation
-    $("#story-carousel-prev").click(function() {
-      storyitems.trigger('prev.owl.carousel');
+        // Custom navigation
+        wrapper.querySelector('.story-carousel-prev').addEventListener('click', function() {
+            storySlider.trigger('prev.owl.carousel');
+        });
+
+        wrapper.querySelector('.story-carousel-next').addEventListener('click', function() {
+            storySlider.trigger('next.owl.carousel');
+        });
     });
 
-    $("#story-carousel-next").click(function() {
-      storyitems.trigger('next.owl.carousel');
-    });
-
+    // Billboard slider initialization
     var billboardItems = $(".billboard-carousel");
     billboardItems.owlCarousel({
-      items: 1,
-      margin: 0,
-      nav: true,
-      loop: true,
-      autoplay: true,
-      autoplayTimeout: 4000,
-      autoplayHoverPause: true,
-      dots: true
+        items: 1,
+        margin: 0,
+        nav: false,
+        loop: true,
+        autoplay: true,
+        autoplayTimeout: 5000,
+        autoplayHoverPause: false,
+        dots: true
     });
 
-    // Custom navigation
+    // Custom navigation for billboards
     $("#billboard-carousel-prev").click(function() {
-      billboardItems.trigger('prev.owl.carousel');
+        billboardItems.trigger('prev.owl.carousel');
     });
 
     $("#billboard-carousel-next").click(function() {
-      billboardItems.trigger('next.owl.carousel');
+        billboardItems.trigger('next.owl.carousel');
     });
-  });
+});
 </script>
-
 @endpush
