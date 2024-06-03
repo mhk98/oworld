@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ShareController;
-
+use App\Http\Controllers\PaymentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -54,6 +54,15 @@ Route::get('/store/{storeSlug}/logo', [ShareController::class, 'logoShare'])->na
 Route::get('/featured-post/{featuredPostId}', [ShareController::class, 'featuredPostShare'])->name('featuredPostShare');
 Route::get('/featured-offer/{featuredOfferId}', [ShareController::class, 'featuredOfferShare'])->name('featuredOfferShare');
 Route::get('/highlight/{highlightCategory}', [ShareController::class, 'shareHighlight'])->name('shareHighlight');
+
+
+//Payment
+Route::post('/pay', [PaymentController::class, 'pay'])->name('payment.pay');
+Route::post('/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::post('/fail', [PaymentController::class, 'fail'])->name('payment.fail');
+Route::post('/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+Route::get('/complete', [PaymentController::class, 'complete'])->name('payment.complete');
+
 
 // System
 Route::get('/system/storage-link', function () {
