@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ShareController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SslCommerzPaymentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -56,12 +57,19 @@ Route::get('/featured-offer/{featuredOfferId}', [ShareController::class, 'featur
 Route::get('/highlight/{highlightCategory}', [ShareController::class, 'shareHighlight'])->name('shareHighlight');
 
 
-//Payment
-Route::post('/pay', [PaymentController::class, 'pay'])->name('payment.pay');
-Route::post('/success', [PaymentController::class, 'success'])->name('payment.success');
-Route::post('/fail', [PaymentController::class, 'fail'])->name('payment.fail');
-Route::post('/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
-Route::get('/complete', [PaymentController::class, 'complete'])->name('payment.complete');
+// SSLCOMMERZ Start
+Route::get('/checkout', [SslCommerzPaymentController::class, 'exampleEasyCheckout']);
+Route::get('/checkout2', [SslCommerzPaymentController::class, 'exampleHostedCheckout']);
+
+Route::post('/pay', [SslCommerzPaymentController::class, 'index']);
+Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
+
+Route::post('/success', [SslCommerzPaymentController::class, 'success']);
+Route::post('/fail', [SslCommerzPaymentController::class, 'fail']);
+Route::post('/cancel', [SslCommerzPaymentController::class, 'cancel']);
+
+Route::post('/ipn', [SslCommerzPaymentController::class, 'ipn']);
+//SSLCOMMERZ END
 
 
 // System
